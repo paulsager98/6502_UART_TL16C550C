@@ -43,7 +43,6 @@ reset:
   sta ACIA_MCTRL
   ;check status
   lda ACIA_STATUS
-  lda ACIA_FIFO
 
 
 
@@ -76,7 +75,6 @@ done:
 
 
 rx_wait:
-  lda ACIA_FIFO
   lda ACIA_STATUS
   and #%00000001
   beq rx_wait
@@ -92,7 +90,6 @@ send_char:
   sta ACIA_DATA
   pha
 tx_wait:
-  lda ACIA_FIFO
   lda ACIA_STATUS ;check tx buffer status, if empty = 1
   and #$20        ; is bit 6 of the register, so $20
   beq tx_wait
