@@ -132,7 +132,6 @@ lcd_instruction:
 
 print_char:
   jsr lcd_wait
-  pha
   sta PORTB
   lda #RS         ; Set RS; Clear RW/E bits
   sta PORTA
@@ -140,7 +139,6 @@ print_char:
   sta PORTA
   lda #RS         ; Clear E bits
   sta PORTA
-  pla
   rts
 
   .org $fffc
