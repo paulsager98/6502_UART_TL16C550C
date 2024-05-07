@@ -1,0 +1,6 @@
+win
+.\vasm6502_oldstyle.exe -Fbin -dotdir -wdc02 .\uart.s
+
+lin/mac
+.\vasm6502_oldstyle -Fbin -dotdir -wdc02 .\uart.s
+
