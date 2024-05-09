@@ -16,25 +16,38 @@ ACIA_DATA   = $5000                    ; If ACIA_CTRL Bit 7 is low, RW Data, if 
 ACIA_BAUD   = $5001                    ; If ACIA_CTRL Bit 7 is low, Interrupt Register, if ACIA_CTRL Bit 7 is high, Last 8 Bits for baud
 ACIA_FIFO   = $5002                    ; FIFO Control Register
 ACIA_CTRL   = $5003
+ACIA_MCTRL	= $5004
 ACIA_STATUS = $5005
 
 
 
 RESET:
-                LDA     #$00           ; Disable Interrupts
-                STA     ACIA_BAUD
-                LDA     #$00           ; Disable FIFO
-                STA     ACIA_FIFO
-                LDA     #$c1           ; 8bit word, 1 stop bit, no pairity (interrupts disabled after MR), divisor latch acess bit 1 to set baud
-                STA     ACIA_CTRL      ; now, writing to $5000 sets LSB of baudrate and $5001 sets MSB of baudrate
-                LDA     #$06           ; LSB to Decimal 6 -> BAUD 19200
-                STA     ACIA_DATA      ; Store to Divisor Latch LSB
-                LDA     #$00           ; MSB to 0 -> complete BAUD $0006
-                STA     ACIA_BAUD      ; Store to Divisor Latch MSB
-                LDA     #$c0           ; 8bit word, 1stop bit, no pairity, divisor latch closed (last bit)
-                STA     ACIA_CTRL      ; write to control register to unlock data read and write register and finish setup
+                CLD
+                CLI
+               ;init of UART
+                LDA #%10000011  ;set 8-N-1 and divisor latch active
+                STA ACIA_CTRL
+
+                ;set BAUD Rate 19200 with 1.8432MHz Osz. and Divisor 6
+                LDA #%00000110  ;load 6 in LSB
+                STA ACIA_DATA   ;$5000
+                LDA #%00000000  ;load 0 in MSB
+                STA ACIA_BAUD   ;$5001
+
+                LDA #%00000011  ;set 8-N-1 and divisor latch inactive
+                STA ACIA_CTRL
+
+                LDA #%00000000  ;disable all interrupts
+                STA ACIA_BAUD
+
+                LDA #%00000000  ;disable FIFO
+                STA ACIA_FIFO
+
+                LDA #%00000000  ;disable Modem Control
+                STA ACIA_MCTRL
 
                 LDA     #$1B           ; Begin with escape.
+                STA     ACIA_DATA
 
 NOTCR:
                 CMP     #$08           ; Backspace key?
@@ -58,7 +71,7 @@ BACKSPACE:      DEY                    ; Back up text index.
 
 NEXTCHAR:
                 LDA     ACIA_STATUS    ; Check status.
-                AND     #$01           ; Key ready?
+                AND     #%00000001           ; Key ready?
                 BEQ     NEXTCHAR       ; Loop until ready.
                 LDA     ACIA_DATA      ; Load character. B7 will be '0'.
                 STA     IN,Y           ; Add to text buffer.
@@ -191,11 +204,11 @@ PRHEX:
                 ADC     #$06           ; Add offset for letter.
 
 ECHO:
-                PHA                    ; Save A.
                 STA     ACIA_DATA      ; Output character.
+                PHA
 
 TX_WAIT:        LDA     ACIA_STATUS
-                AND     #$20
+                AND     #%01000000
                 BEQ     TX_WAIT
                 PLA
                 RTS

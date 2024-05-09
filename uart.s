@@ -80,8 +80,8 @@ rx_wait:
   beq rx_wait
 
   lda ACIA_DATA
-  jsr print_char
   jsr send_char
+  jsr print_char
   jmp rx_wait
 
 message: .asciiz "Hello, world!"
@@ -91,7 +91,7 @@ send_char:
   pha
 tx_wait:
   lda ACIA_STATUS ;check tx buffer status, if empty = 1
-  and #$20        ; is bit 6 of the register, so $20
+  and #%01000000        ; is bit 7 of the register
   beq tx_wait
   pla
   rts
@@ -130,12 +130,14 @@ lcd_instruction:
 print_char:
   jsr lcd_wait
   sta PORTB
+  pha
   lda #RS         ; Set RS; Clear RW/E bits
   sta PORTA
   lda #(RS | E)   ; Set E bit to send instruction
   sta PORTA
   lda #RS         ; Clear E bits
   sta PORTA
+  pla
   rts
 
   .org $fffc
