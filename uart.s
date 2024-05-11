@@ -25,7 +25,7 @@ reset:
   sta ACIA_CTRL
 
   ;set BAUD Rate 19200 with 1.8432MHz Osz. and Divisor 6
-  lda #%00000110  ;load 6 in LSB
+  lda #%00000011  ;load 6 in LSB
   sta ACIA_DATA   ;$5000
   lda #%00000000  ;load 0 in MSB
   sta ACIA_BAUD   ;$5001
@@ -84,7 +84,10 @@ rx_wait:
   jsr print_char
   jmp rx_wait
 
+
+
 message: .asciiz "Hello, world!"
+
 
 send_char:
   sta ACIA_DATA
@@ -139,6 +142,7 @@ print_char:
   sta PORTA
   pla
   rts
+
 
   .org $fffc
   .word reset
