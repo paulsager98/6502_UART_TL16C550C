@@ -166,14 +166,12 @@ lcd_instruction:
 print_char:
   jsr lcd_wait
   sta PORTB
-  pha
   lda #RS         ; Set RS; Clear RW/E bits
   sta PORTA
   lda #(RS | E)   ; Set E bit to send instruction
   sta PORTA
   lda #RS         ; Clear E bits
   sta PORTA
-  pla
   rts
 
 
