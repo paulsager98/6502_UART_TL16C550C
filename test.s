@@ -129,8 +129,20 @@ tx_wait:
   and #%01000000        ; is bit 7 of the register
   beq tx_wait
   pla
-	sta ACIA_DATA
+  sta ACIA_DATA
   rts
+
+send_char_delay:
+  pha
+  lda #$ff
+tx_wait:
+  cmp #0
+  bne tx_wait
+  pla
+  sta ACIA_DATA
+  rts
+
+
 
 lcd_wait:
   pha
