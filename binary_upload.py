@@ -2,7 +2,7 @@ import serial
 import time
 
 # Open serial connection to Arduino
-arduino = serial.Serial('/dev/cu.usbserial-11110', 57600)  # Adjust device path and baud rate as necessary
+arduino = serial.Serial('COM8', 57600)  # Adjust device path and baud rate as necessary
 time.sleep(2)  # Allow time for Arduino to reset
 
 # Define the path to the binary file

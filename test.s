@@ -1,4 +1,4 @@
-ORTB = $6000
+PORTB = $6000
 PORTA = $6001
 DDRB = $6002
 DDRA = $6003
@@ -132,15 +132,6 @@ tx_wait:
   sta ACIA_DATA
   rts
 
-send_char_delay:
-  pha
-  lda #$ff
-tx_wait:
-  cmp #0
-  bne tx_wait
-  pla
-  sta ACIA_DATA
-  rts
 
 
 
@@ -189,4 +180,4 @@ print_char:
 
   .org $fffc
   .word reset
-  .word $0000
+  .word $0000       ;hier vielleicht andere adresse zum testen ob interrupt getriggert wird

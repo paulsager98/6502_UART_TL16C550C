@@ -54,19 +54,6 @@ RESET:
                 STA ACIA_MCTRL
                 lda ACIA_STATUS
 
- lda #%11111111 ; Set all pins on port B to output
-  sta DDRB
-  lda #%11100000 ; Set top 3 pins on port A to output
-  sta DDRA
-
-  lda #%00111000 ; Set 8-bit mode; 2-line display; 5x8 font
-  jsr lcd_instruction
-  lda #%00001110 ; Display on; cursor on; blink off
-  jsr lcd_instruction
-  lda #%00000110 ; Increment and shift cursor; don't shift display
-  jsr lcd_instruction
-  lda #$00000001 ; Clear display
-  jsr lcd_instruction
 
                 LDA     #$1B           ; Begin with escape
 
@@ -233,39 +220,6 @@ TXDELAY:
                 BEQ     TXDELAY        ; Until A gets to 0.
                 PLA                    ; Restore A.
                 RTS                    ; Return.
-
-
-lcd_instruction:
-  jsr lcd_wait
-  sta PORTB
-  lda #0         ; Clear RS/RW/E bits
-  sta PORTA
-  lda #E         ; Set E bit to send instruction
-  sta PORTA
-  lda #0         ; Clear RS/RW/E bits
-  sta PORTA
-  rts
-
-
-lcd_wait:
-  pha
-  lda #%00000000  ; Port B is input
-  sta DDRB
-lcdbusy:
-  lda #RW
-  sta PORTA
-  lda #(RW | E)
-  sta PORTA
-  lda PORTB
-  and #%10000000
-  bne lcdbusy
-
-  lda #RW
-  sta PORTA
-  lda #%11111111  ; Port B is output
-  sta DDRB
-  pla
-  rts
 
 
 .segment "RESETVEC"
