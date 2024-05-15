@@ -126,7 +126,7 @@ send_char:
   pha
 tx_wait:
   lda ACIA_STATUS ;check tx buffer status, if empty = 1
-  and #%01000000        ; is bit 7 of the register
+  and #%00100000        ; is bit 5 of the register
   beq tx_wait
   pla
   sta ACIA_DATA
